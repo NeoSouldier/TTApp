@@ -42,16 +42,6 @@ public class AppDirector : MonoBehaviour
         Init();
         SetState((int)AppState.kStartScreen);
 	}
-	
-	public void Update () 
-    {
-        // empty
-	} 
-
-    public void SetTEST(AppState appState)
-    {
-        //
-    }
 
     public void SetState(int state)
     {
@@ -60,6 +50,7 @@ public class AppDirector : MonoBehaviour
 
     public void PlayVideo(int videoIndex)
     {
+        HideScreen();
         PlayVideoInternal(videoIndex);
     }
 
@@ -73,6 +64,7 @@ public class AppDirector : MonoBehaviour
     {
         m_canvasTopLevel.SetActive(true);
         m_videoPlayer.targetCameraAlpha = 0;
+        ShowScreen((int)m_appState);
     }
 
     // **************************
@@ -91,14 +83,23 @@ public class AppDirector : MonoBehaviour
         m_currVideoIndex = -1;
     }
 
+    private void ShowScreen(int screenNumber)
+    {
+        for (int i = 0; i < (int)AppState.kMax; i++)
+        {
+            screens[i].SetActive(i == screenNumber);
+        }
+    }
+
+    private void HideScreen()
+    {
+        ShowScreen(-1);
+    }
+
     private void SetStateInternal(AppState appState)
     {
         m_appState = appState;
-        for (int i = 0; i < (int)AppState.kMax; i++ )
-        {
-            bool isNewState = i == (int)appState;
-            screens[i].SetActive(isNewState);
-        }
+        ShowScreen((int)m_appState);
     }
 
     private void PlayVideoInternal(int videoIndex)
