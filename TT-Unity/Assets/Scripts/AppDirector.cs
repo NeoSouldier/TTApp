@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Video;
@@ -40,7 +40,7 @@ public class AppDirector : MonoBehaviour
 	public void Start () 
     {
         Init();
-        SetState((int)AppState.kStartScreen);
+        SetState((int)AppState.kMainMenu);
 	}
 
     public void SetState(int state)
