@@ -27,7 +27,12 @@ public class AppDirector : MonoBehaviour
     [SerializeField] private GameObject m_intermediate;
     [SerializeField] private GameObject m_advanced;
     [SerializeField] private YoutubePlayer m_youtubePlayer;
-    [SerializeField] private VideoPlayer m_videoPlayer;
+    [SerializeField] private VideoPlayer m_youtubeVideoPlayer;
+    [SerializeField] private VideoPlayer m_clipVideoPlayer; // Currently separating youtube Video Player from Embedded videos...
+    [SerializeField] private UnityEngine.Video.VideoClip m_introVideoClip;
+    [SerializeField] private UnityEngine.Video.VideoClip m_beginnerVideoClip;
+    [SerializeField] private UnityEngine.Video.VideoClip m_intermediateVideoClip;
+    [SerializeField] private UnityEngine.Video.VideoClip m_advancedVideoClip;
 
     private AppState m_appState;
     private GameObject[] screens;
@@ -40,7 +45,19 @@ public class AppDirector : MonoBehaviour
 	public void Start () 
     {
         Init();
-        SetState((int)AppState.kMainMenu);
+
+        if (false) // Condition to only play video once...
+        {
+            SetState((int)AppState.kStartScreen);
+            m_clipVideoPlayer.clip = m_introVideoClip;
+            m_clipVideoPlayer.Play();
+            m_clipVideoPlayer.loopPointReached += IntroVideoFinished;
+            m_clipVideoPlayer.targetCameraAlpha = 1; 
+        }
+        else
+        {
+            SetState((int)AppState.kMainMenu);
+        }
 	}
 
     public void SetState(int state)
@@ -57,13 +74,13 @@ public class AppDirector : MonoBehaviour
     public void VideoStarted()
     {
         m_canvasTopLevel.SetActive(false);
-        m_videoPlayer.targetCameraAlpha = 1;
+        m_youtubeVideoPlayer.targetCameraAlpha = 1;
     }
 
     public void VideoFinished()
     {
         m_canvasTopLevel.SetActive(true);
-        m_videoPlayer.targetCameraAlpha = 0;
+        m_youtubeVideoPlayer.targetCameraAlpha = 0;
         ShowScreen((int)m_appState);
     }
 
@@ -100,6 +117,31 @@ public class AppDirector : MonoBehaviour
     {
         m_appState = appState;
         ShowScreen((int)m_appState);
+
+        if (m_appState == AppState.kBeginner && false) //Condition should check internal variable
+        {
+            m_clipVideoPlayer.clip = m_beginnerVideoClip;
+            m_clipVideoPlayer.Play();
+            m_clipVideoPlayer.loopPointReached += NormalVideoFinished;
+            m_clipVideoPlayer.targetCameraAlpha = 1; 
+            m_canvasTopLevel.SetActive(false);
+        }
+        else if (m_appState == AppState.kIntermediate && true) //Condition should check internal variable
+        {
+            m_clipVideoPlayer.clip = m_intermediateVideoClip;
+            m_clipVideoPlayer.Play();
+            m_clipVideoPlayer.loopPointReached += NormalVideoFinished;
+            m_clipVideoPlayer.targetCameraAlpha = 1; 
+            m_canvasTopLevel.SetActive(false);
+        }
+        else if (m_appState == AppState.kAdvanced && false) //Condition should check internal variable
+        {
+            m_clipVideoPlayer.clip = m_advancedVideoClip;
+            m_clipVideoPlayer.Play();
+            m_clipVideoPlayer.loopPointReached += NormalVideoFinished;
+            m_clipVideoPlayer.targetCameraAlpha = 1;
+            m_canvasTopLevel.SetActive(false);
+        }
     }
 
     private void PlayVideoInternal(int videoIndex)
@@ -107,12 +149,26 @@ public class AppDirector : MonoBehaviour
         bool isNewVideo = m_currVideoIndex != videoIndex;
         if (isNewVideo) // load new video
         {
-            string videoURL = "https://www.youtube.com/watch?v=y8Kyi0WNg40";
+            //string videoURL = "https://www.youtube.com/watch?v=unh8kWUuNt4"; // Migos
+            //string videoURL = "https://www.youtube.com/watch?v=GLb4UeangcQ"; // 720p
+            string videoURL = "https://youtu.be/qCPxwaTN54c"; // 360p
             m_youtubePlayer.LoadYoutubeVideo(videoURL);
+            m_currVideoIndex = videoIndex;            
         }
         else
         {
             m_youtubePlayer.PlayButton();
         }
+    }
+    private void IntroVideoFinished(UnityEngine.Video.VideoPlayer videoPlayer)
+    {
+        videoPlayer.targetCameraAlpha = 0;
+        SetState((int)AppState.kMainMenu);
+    }
+
+    private void NormalVideoFinished(UnityEngine.Video.VideoPlayer videoPlayer)
+    {        
+        m_canvasTopLevel.SetActive(true);
+        videoPlayer.targetCameraAlpha = 0;        
     }
 }
