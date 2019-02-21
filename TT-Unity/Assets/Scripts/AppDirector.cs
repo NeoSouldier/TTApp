@@ -46,13 +46,14 @@ public class AppDirector : MonoBehaviour
     {
         Init();
 
-        if (false) // Condition to only play video once...
-        {
+        if (!PlayerPrefs.HasKey("IntroVideoPlayed")) 
+        {            
             SetState((int)AppState.kStartScreen);
             m_clipVideoPlayer.clip = m_introVideoClip;
             m_clipVideoPlayer.Play();
             m_clipVideoPlayer.loopPointReached += IntroVideoFinished;
             m_clipVideoPlayer.targetCameraAlpha = 1; 
+            PlayerPrefs.SetInt("IntroVideoPlayed", 1);
         }
         else
         {
@@ -118,29 +119,32 @@ public class AppDirector : MonoBehaviour
         m_appState = appState;
         ShowScreen((int)m_appState);
 
-        if (m_appState == AppState.kBeginner && false) //Condition should check internal variable
+        if (m_appState == AppState.kBeginner && !PlayerPrefs.HasKey("BeginnerVideoPlayed"))
         {
             m_clipVideoPlayer.clip = m_beginnerVideoClip;
             m_clipVideoPlayer.Play();
             m_clipVideoPlayer.loopPointReached += NormalVideoFinished;
             m_clipVideoPlayer.targetCameraAlpha = 1; 
             m_canvasTopLevel.SetActive(false);
+            PlayerPrefs.SetInt("BeginnerVideoPlayed", 1);
         }
-        else if (m_appState == AppState.kIntermediate && true) //Condition should check internal variable
+        else if (m_appState == AppState.kIntermediate && !PlayerPrefs.HasKey("IntermediateVideoPlayed"))
         {
             m_clipVideoPlayer.clip = m_intermediateVideoClip;
             m_clipVideoPlayer.Play();
             m_clipVideoPlayer.loopPointReached += NormalVideoFinished;
             m_clipVideoPlayer.targetCameraAlpha = 1; 
             m_canvasTopLevel.SetActive(false);
+            PlayerPrefs.SetInt("IntermediateVideoPlayed", 1);
         }
-        else if (m_appState == AppState.kAdvanced && false) //Condition should check internal variable
+        else if (m_appState == AppState.kAdvanced && !PlayerPrefs.HasKey("AdvancedVideoPlayed"))
         {
             m_clipVideoPlayer.clip = m_advancedVideoClip;
             m_clipVideoPlayer.Play();
             m_clipVideoPlayer.loopPointReached += NormalVideoFinished;
             m_clipVideoPlayer.targetCameraAlpha = 1;
             m_canvasTopLevel.SetActive(false);
+            PlayerPrefs.SetInt("AdvancedVideoPlayed", 1);
         }
     }
 
@@ -150,8 +154,9 @@ public class AppDirector : MonoBehaviour
         if (isNewVideo) // load new video
         {
             //string videoURL = "https://www.youtube.com/watch?v=unh8kWUuNt4"; // Migos
-            //string videoURL = "https://www.youtube.com/watch?v=GLb4UeangcQ"; // 720p
-            string videoURL = "https://youtu.be/qCPxwaTN54c"; // 360p
+            string videoURL = "https://youtu.be/tZWlNIuwvSE"; // 720p            
+            //string videoURL = "https://youtu.be/qCPxwaTN54c"; // 360p
+            //string videoURL = "https://www.dropbox.com/s/wancnhr5h6vwu1h/ToeTaps.mp4?dl=0";
             m_youtubePlayer.LoadYoutubeVideo(videoURL);
             m_currVideoIndex = videoIndex;            
         }
