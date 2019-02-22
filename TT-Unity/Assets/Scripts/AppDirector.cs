@@ -26,8 +26,9 @@ public class AppDirector : MonoBehaviour
     [SerializeField] private GameObject m_beginner;
     [SerializeField] private GameObject m_intermediate;
     [SerializeField] private GameObject m_advanced;
-    [SerializeField] private YoutubePlayer m_youtubePlayer;
-    [SerializeField] private VideoPlayer m_youtubeVideoPlayer;
+    //[SerializeField] private YoutubePlayer m_youtubePlayer;
+    [SerializeField] private Vimeo.Player.VimeoPlayer m_vimeoPlayer;
+    [SerializeField] private VideoPlayer m_vimeoVideoPlayer;
     [SerializeField] private VideoPlayer m_clipVideoPlayer; // Currently separating youtube Video Player from Embedded videos...
     [SerializeField] private UnityEngine.Video.VideoClip m_introVideoClip;
     [SerializeField] private UnityEngine.Video.VideoClip m_beginnerVideoClip;
@@ -75,14 +76,16 @@ public class AppDirector : MonoBehaviour
     public void VideoStarted()
     {
         m_canvasTopLevel.SetActive(false);
-        m_youtubeVideoPlayer.targetCameraAlpha = 1;
+        m_vimeoVideoPlayer.targetCameraAlpha = 1;
+        Debug.Log("[AppDirector] VideoStarted()");
     }
 
-    public void VideoFinished()
+    public void VideoFinished(VideoPlayer videoPlayer)
     {
         m_canvasTopLevel.SetActive(true);
-        m_youtubeVideoPlayer.targetCameraAlpha = 0;
+        m_vimeoVideoPlayer.targetCameraAlpha = 0;
         ShowScreen((int)m_appState);
+        Debug.Log("[AppDirector] VideoFinished()");
     }
 
     // **************************
@@ -99,6 +102,10 @@ public class AppDirector : MonoBehaviour
         screens[(int)AppState.kAdvanced] = m_advanced;
 
         m_currVideoIndex = -1;
+
+        m_vimeoPlayer.OnVideoStart += VideoStarted;
+        m_vimeoPlayer.OnPlay += VideoStarted;
+        m_vimeoVideoPlayer.loopPointReached += VideoFinished;
     }
 
     private void ShowScreen(int screenNumber)
@@ -153,16 +160,13 @@ public class AppDirector : MonoBehaviour
         bool isNewVideo = m_currVideoIndex != videoIndex;
         if (isNewVideo) // load new video
         {
-            //string videoURL = "https://www.youtube.com/watch?v=unh8kWUuNt4"; // Migos
-            string videoURL = "https://youtu.be/tZWlNIuwvSE"; // 720p            
-            //string videoURL = "https://youtu.be/qCPxwaTN54c"; // 360p
-            //string videoURL = "https://www.dropbox.com/s/wancnhr5h6vwu1h/ToeTaps.mp4?dl=0";
-            m_youtubePlayer.LoadYoutubeVideo(videoURL);
+            string videoURL = "https://vimeo.com/318340152";            
+            m_vimeoPlayer.PlayVideo(videoURL);
             m_currVideoIndex = videoIndex;            
         }
         else
         {
-            m_youtubePlayer.PlayButton();
+            m_vimeoPlayer.Play();
         }
     }
     private void IntroVideoFinished(UnityEngine.Video.VideoPlayer videoPlayer)
